@@ -82,3 +82,10 @@ class PostProcView(APIView):
                 'percentageAccumulated':percentageAccumulated
             })
         return Response(res)
+
+    # Este metodo recibe los votos y devuelve los votos procesados según el algoritmo de recuento borda
+    def recuento_borda(self,options):
+
+        res = None
+
+        return Response(res)
