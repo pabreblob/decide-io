@@ -82,3 +82,7 @@ class PostProcView(APIView):
                 'percentageAccumulated':percentageAccumulated
             })
         return Response(res)
+
+        #Here we are going to implement d'Hont Method (CarlosC)
+        # quot = TotalNumberOfVotes / (SeatsOfParty + 1)
+        #initially SeatsOfParty = 0 for all parties
