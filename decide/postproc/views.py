@@ -82,3 +82,9 @@ class PostProcView(APIView):
                 'percentageAccumulated':percentageAccumulated
             })
         return Response(res)
+
+    #All options must be ordered and returned. Options are ordered according to gender parity
+    def orderedOptions(self, options):
+        out[]
+        #Gender parity: learn more about this functionality
+        return Response(out)
