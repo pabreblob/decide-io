@@ -67,7 +67,7 @@ MODULES = [
     'visualizer',
     'voting',
 ]
-BASEURL = 'https://decideIOpostproc.herokuapp.com'
+BASEURL = 'https://decideiopostproc.herokuapp.com'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
