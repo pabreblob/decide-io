@@ -39,6 +39,8 @@ class PostProcView(APIView):
             return self.weightedOptions(opts)
         elif t=='RANDOM':
             return self.randomSelection(opts)
+        elif t=='BORDA':
+            return self.borda_count(opts)
         return Response({})
     #Each option has an assigned weight. The votes each option has received will be multiplied by their corresponding weight
     def weightedOptions(self, options):
@@ -84,8 +86,20 @@ class PostProcView(APIView):
         return Response(res)
 
     # Este metodo recibe los votos y devuelve los votos procesados según el algoritmo de recuento borda
-    def recuento_borda(self,options):
+    def borda_count(self,options):
+        choices = options['choices']
+        votes = options['votes']
 
-        res = None
+        results = {}
+        for i in choices:
+            results[i] = 0
 
-        return Response(res)
+        for vote in votes:
+            vote_len = len(vote)
+            for option in vote:
+                actual_vote_option = results[option]
+                results[option] = actual_vote_option + (vote_len)
+                vote_len -= 1
+        return results
+
+        return Response(results)
