@@ -143,3 +143,31 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertGreaterEqual(values[0]['percentageAccumulated'],values[0]['randomNumber'])
+
+    def test_genderParity(self):
+        data = {
+            'type': 'GENDER',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 5,'men':1,'women':4},
+                { 'option': 'Option 2', 'number': 2, 'votes': 0,'men':0,'women':0},
+                { 'option': 'Option 3', 'number': 3, 'votes': 3,'men':2,'women':1},
+                { 'option': 'Option 4', 'number': 4, 'votes': 2,'men':1,'women':1},
+                { 'option': 'Option 5', 'number': 5, 'votes': 5,'men':1,'women':4},
+                { 'option': 'Option 6', 'number': 6, 'votes': 1,'men':1,'women':0},
+            ]
+        }
+
+        expected_result = [
+            {'option': 'Option 5', 'number': 5, 'votes': 5,'weight':1.5,'postproc':7.5},
+            {'option': 'Option 1', 'number': 1, 'votes': 5,'weight':1,'postproc': 5},
+            {'option': 'Option 4', 'number': 4, 'votes': 2,'weight':2,'postproc': 4},
+            {'option': 'Option 3', 'number': 3, 'votes': 3,'weight':1,'postproc': 3},
+            {'option': 'Option 6', 'number': 6, 'votes': 1,'weight':1,'postproc': 1},
+            {'option': 'Option 2', 'number': 2, 'votes': 0,'weight':1,'postproc': 0},
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)

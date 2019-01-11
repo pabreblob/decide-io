@@ -39,6 +39,8 @@ class PostProcView(APIView):
             return self.weightedOptions(opts)
         elif t=='RANDOM':
             return self.randomSelection(opts)
+        elif t=='GENDER':
+            return self.genderParity(opts)
         return Response({})
     #Each option has an assigned weight. The votes each option has received will be multiplied by their corresponding weight
     def weightedOptions(self, options):
@@ -84,7 +86,24 @@ class PostProcView(APIView):
         return Response(res)
 
     #All options must be ordered and returned. Options are ordered according to gender parity
-    def orderedOptions(self, options):
-        out[]
+    def genderParity(self, options):
+        out = []
+        menList = []
+        womenList = []
+        maxVotes = options.lenght*0.50
+
+        for opt in options:
+            if opt=='men':
+                menList.append(opt)
+            elif opt='woman':
+                womenList.append(opt)
+
+        if menList.lenght<=maxVotes:
+            out = menList + womenList[:menList.lenght]
+            random.shuffle(out)
+        elif womenList.lenght<=maxVotes:
+            out = womenList + menList[:womenList.lenght]
+            random.shuffle(out)
+
         #Gender parity: learn more about this functionality
         return Response(out)
