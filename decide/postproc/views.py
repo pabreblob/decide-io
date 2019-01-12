@@ -85,37 +85,31 @@ class PostProcView(APIView):
             })
         return Response(res)
 
-    #All options must be ordered and returned. Options are ordered according to gender parity
+    # All options must be ordered and returned. Options are ordered according to gender parity
     def genderParity(self, options):
         out = []
         menList = []
         womenList = []
-        maxVotes = options.lenght*0.50
 
         for opt in options:
-            if opt['gender']=='m':
+            if opt['gender'] == 'm':
                 menList.append({
                     **opt,
                     'postproc': opt['votes']
                 })
-                menList.sort(key=lambda votos: votos[0], reverse=True)
-            elif opt['gender']=='w':
+            elif opt['gender'] == 'w':
                 womenList.append({
                     **opt,
                     'postproc': opt['votes']
                 })
-                womenList.sort(key=lambda votos: votos[0], reverse=True)
+        menList.sort(key=lambda x: -x['postproc'])
+        womenList.sort(key=lambda x: -x['postproc'])
+        # limitar menList y womenList
+        if len(menList) <= len(womenList):
+            out = menList + womenList[:len(menList)]
+        else:
+            out = menList[:len(womenList)] + womenList
 
-        #limitar menList y womenList
-        if menList.lenght<=maxVotes:
-            out = menList + womenList[:menList.lenght]
-        elif womenList.lenght<=maxVotes:
-            out = womenList + menList[:womenList.lenght]
+        out.sort(key=lambda x: -x['votes'])
 
-        #setear variable 'postproc' a 0 en las opciones que no serán devueltas
-
-        for opt in options:
-            if  opt not in out:
-                opt['postproc'] = 0
-
-        return Response(options)
+        return Response(out)
