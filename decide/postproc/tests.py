@@ -148,12 +148,12 @@ class PostProcTestCase(APITestCase):
         data = {
             'type': 'GENDER',
             'options': [
-                { 'option': 'Option 1', 'number': 1, 'votes': 5,'gender'='m'},
-                { 'option': 'Option 2', 'number': 2, 'votes': 0,'gender'='w'},
-                { 'option': 'Option 3', 'number': 3, 'votes': 3,'gender'='w'},
-                { 'option': 'Option 4', 'number': 4, 'votes': 2,'gender'='m'},
-                { 'option': 'Option 5', 'number': 5, 'votes': 5,'gender'='w'},
-                { 'option': 'Option 6', 'number': 6, 'votes': 1,'gender'='w'},
+                { 'option': 'Option 1', 'number': 1, 'votes': 5,'gender':'m'},
+                { 'option': 'Option 2', 'number': 2, 'votes': 0,'gender':'w'},
+                { 'option': 'Option 3', 'number': 3, 'votes': 3,'gender':'w'},
+                { 'option': 'Option 4', 'number': 4, 'votes': 2,'gender':'m'},
+                { 'option': 'Option 5', 'number': 5, 'votes': 5,'gender':'w'},
+                { 'option': 'Option 6', 'number': 6, 'votes': 1,'gender':'w'},
             ]
         }
 
