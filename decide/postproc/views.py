@@ -55,7 +55,7 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
-    #Only one option is chosen and returned. Options are chosen randomly, taking into account the percentage of votes each option got.
+ por numero de votos    #Only one option is chosen and returned. Options are chosen randomly, taking into account the percentage of votes each option got.
     def randomSelection(self, options):
         out = []
         totalVotes=0
@@ -93,17 +93,29 @@ class PostProcView(APIView):
         maxVotes = options.lenght*0.50
 
         for opt in options:
-            if opt=='men':
-                menList.append(opt)
-            elif opt='woman':
-                womenList.append(opt)
+            if opt['gender']=='m':
+                menList.append({
+                    **opt,
+                    'postproc': opt['votes']
+                })
+                menList.sort(key=lambda votos: votos[0], reverse=True)
+            elif opt['gender']=='w':
+                womenList.append({
+                    **opt,
+                    'postproc': opt['votes']
+                })
+                womenList.sort(key=lambda votos: votos[0], reverse=True)
 
+        #limitar menList y womenList
         if menList.lenght<=maxVotes:
             out = menList + womenList[:menList.lenght]
-            random.shuffle(out)
         elif womenList.lenght<=maxVotes:
             out = womenList + menList[:womenList.lenght]
-            random.shuffle(out)
 
-        #Gender parity: learn more about this functionality
-        return Response(out)
+        #setear variable 'postproc' a 0 en las opciones que no serán devueltas
+
+        for opt in options:
+            if  opt not in out:
+                opt['postproc'] = 0
+
+        return Response(options)
