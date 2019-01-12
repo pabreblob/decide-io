@@ -55,7 +55,7 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
- por numero de votos    #Only one option is chosen and returned. Options are chosen randomly, taking into account the percentage of votes each option got.
+    #Only one option is chosen and returned. Options are chosen randomly, taking into account the percentage of votes each option got.
     def randomSelection(self, options):
         out = []
         totalVotes=0
