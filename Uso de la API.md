@@ -114,3 +114,25 @@ Las opciones a devolver deberán pasar un filtro respecto a la edad de los prese
 ```
 
 La respuesta ofrecida, al igual que las anteriores, solo añadira un atributo postprocesado. En este caso, el atributo indicará la minima edad que se ha establecido en el posprocesado, para así poder diferenciar el requisito de edad establecido. Las opciones serán ordenadas por la edad, siendo la primera la de menor edad.
+
+## Procesado siguiendo el Sistema d'Hondt
+
+Las opciones recibidas deben incluir el número de escaños que se asignarán para cada una de las opciones de la votación. Según el algoritmo del Sistema d'Hondt siguiendo un método de promedio mayor.Los métodos de promedio mayor se caracterizan por dividir a través de distintos divisores los totales de los votos obtenidos por los distintos partidos, produciéndose secuencias de cocientes decrecientes para cada partido y asignándose los escaños a los promedios más altos.El formato JSON que debe cumplir será del siguiente formato
+
+```js
+{
+              'type': 'HONDT',
+              'options': {
+                  'escanos': 3,
+                  'votes': [{'option': 'Option 1', 'seat': 1, 'votes': 15},
+                            {'option': 'Option 2', 'seat': 0, 'votes': 3},
+                            {'option': 'Option 3', 'seat': 1, 'votes': 9},
+                            {'option': 'Option 4', 'seat': 0, 'votes': 7},
+                            {'option': 'Option 5', 'seat': 1, 'votes': 12},
+                            {'option': 'Option 6', 'seat': 0, 'votes': 1}
+                            ]
+              }
+}
+```
+
+La respuesta ofrecida añadiría un atributo seat a cada opción. En este caso, el atributo indicará el número de escaños que corresponde a cada opción. Las opciones serán ordenadas por el número de opción.
