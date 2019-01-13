@@ -143,3 +143,92 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertGreaterEqual(values[0]['percentageAccumulated'],values[0]['randomNumber'])
+
+
+    def test_genderParity(self):
+        data = {
+            'type': 'GENDER',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 5, 'gender':'m'},
+                { 'option': 'Option 2', 'number': 2, 'votes': 0, 'gender':'w'},
+                { 'option': 'Option 3', 'number': 3, 'votes': 3, 'gender':'w'},
+                { 'option': 'Option 4', 'number': 4, 'votes': 2, 'gender':'m'},
+                { 'option': 'Option 5', 'number': 5, 'votes': 5, 'gender':'w'},
+                { 'option': 'Option 6', 'number': 6, 'votes': 1, 'gender':'w'},
+            ]
+        }
+
+        expected_result = [
+            {'option': 'Option 1', 'number': 1, 'votes': 5, 'gender': 'm','postproc':5},
+            {'option': 'Option 5', 'number': 5, 'votes': 5, 'gender': 'w','postproc':5},
+            {'option': 'Option 3', 'number': 3, 'votes': 3, 'gender': 'w','postproc':3},
+            {'option': 'Option 4', 'number': 4, 'votes': 2, 'gender': 'm','postproc':2}
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+
+    def test_borda1(self):
+        data = {
+            'type': 'BORDA',
+            'options': {
+                'choices': ['a', 'b', 'c', 'd', 'e'],
+                'votes': [['d', 'b', 'e', 'c', 'a'],
+                          ['a', 'd', 'b', 'c', 'e'],
+                          ['a', 'd', 'e', 'c', 'b']]
+            }
+        }
+
+        expected = {'a': 11, 'b': 8, 'c': 6, 'd': 13, 'e': 7}
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected)
+
+
+    def test_borda2(self):
+        data = {
+            'type': 'BORDA',
+            'options': {
+                'choices': ['a', 'b', 'c', 'd', 'e'],
+                'votes': [['d', 'b', 'c', 'a', 'e'],
+                          ['e', 'd', 'c', 'b', 'a'],
+                          ['b', 'c', 'd', 'a', 'e'],
+                          ['a', 'e', 'd', 'c', 'b'],
+                          ['b', 'e', 'd', 'c', 'a']]
+            }
+        }
+
+        expected = {'a': 11, 'b': 17, 'c': 14, 'd': 18, 'e': 15}
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected)
+
+
+    def test_borda3(self):
+        data = {
+            'type': 'BORDA',
+            'options': {
+                'choices': ['a', 'b', 'c', 'd', 'e'],
+                'votes': [['d', 'b', 'e', 'c', 'a'],
+                          ['a', 'd', 'b', 'c', 'e'],
+                          ['a', 'd', 'e', 'c', 'b']]
+            }
+        }
+
+        expected = {'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0}
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertNotEqual(values, expected)

@@ -1,22 +1,28 @@
 language: python 
 python: 
-- "3.6"
+- "3.6.6"
 services:
 - postgresql
 env: 
 - DJANGO=2.0 DB=postgres
 global:
   - PGPORT=5432
-before_install: 
-- cd decide
 install: 
-- pip install -r ../requirements.txt
-before_script: 
+- pip install -r requirements.txt
+before_script:
+- cd decide
 - cp local_settings.travis.py local_settings.py
 - psql -c "create user decide with password 'decide'"
 - psql -c "create database decide owner decide"
 - python manage.py migrate
 script: 
 - python manage.py test
+after_script:
+- cd ..
 addons:
   postgresql: "9.6"
+deploy:
+  provider: heroku
+  api_key: 516fca26-994c-424b-b55e-65cf37cb51cf
+  app: decideiopostproc
+
