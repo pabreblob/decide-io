@@ -232,3 +232,31 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertNotEqual(values, expected)
+
+    def test_hondt(self):
+        data = {
+            'type': 'HONDT',
+            'options': {
+                'escanos': 3,
+                'votes': [{'option': 'Option 1', 'seat': 1, 'votes': 15},
+                          {'option': 'Option 2', 'seat': 0, 'votes': 3},
+                          {'option': 'Option 3', 'seat': 1, 'votes': 9},
+                          {'option': 'Option 4', 'seat': 0, 'votes': 7},
+                          {'option': 'Option 5', 'seat': 1, 'votes': 12},
+                          {'option': 'Option 6', 'seat': 0, 'votes': 1}
+                          ]
+            }
+        }
+
+        expected = {1, 0, 1, 0, 1, 0}
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+
+        compare = []
+        for i in values:
+            compare.append(i['seat'])
+
+        self.assertNotEqual(compare, expected)

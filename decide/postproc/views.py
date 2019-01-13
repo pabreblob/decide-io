@@ -43,6 +43,8 @@ class PostProcView(APIView):
             return self.genderParity(opts)
         elif t=='BORDA':
             return self.borda_count(opts)
+        elif t=='HONDT':
+            return self.hondt(opts)
         return Response({})
     #Each option has an assigned weight. The votes each option has received will be multiplied by their corresponding weight
     def weightedOptions(self, options):
@@ -90,6 +92,28 @@ class PostProcView(APIView):
         #Here we are going to implement d'Hont Method (CarlosC)
         # quot = TotalNumberOfVotes / (SeatsOfParty + 1)
         #initially SeatsOfParty = 0 for all parties
+    def hondt(self, options):
+            escanos = options['escanos']
+            votos = options['votes']
+
+            aux2 = escanos
+
+            for i in votos:
+                i['seat'] = 0
+
+            for i in range(0, escanos):
+                maximum = [None, 0]
+            for x in votos:
+                voto_actual = x['votes']
+                formula_aplicada = voto_actual / (x['seat'] + 1)
+                if formula_aplicada > maximum[1]:
+                    maximum = [x['option'], formula_aplicada]
+            for g in votos:
+                if g['option'] == maximum[0]:
+                    g['seat'] += 1
+            aux2 -= 1
+            return Response(votos)
+
 
 
     # All options must be ordered and returned. Options are ordered according to gender parity
