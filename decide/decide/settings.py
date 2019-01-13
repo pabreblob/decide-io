@@ -65,7 +65,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'http://localhost:8000'
+BASEURL = 'https://decideiopostproc.herokuapp.com'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
