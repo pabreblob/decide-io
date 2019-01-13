@@ -250,6 +250,11 @@ class PostProcTestCase(APITestCase):
 
         expected = {1, 0, 1, 0, 1, 0}
 
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+
         compare = []
         for i in values:
             compare.append(i['seat'])
