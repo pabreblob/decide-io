@@ -1,9 +1,7 @@
-PLa API del postprocesado de votos permite obtener los resultados de una votación, una vez mandada una petición indicando el tipo de recuento a seguir y las diferentes opciones de una votación junto a su número de votos.
+La API del postprocesado de votos permite obtener los resultados de una votación, una vez mandada una petición indicando el tipo de recuento a seguir y las diferentes opciones de una votación junto a su número de votos.
 
 Esta API cuenta con un sólo método, al cual se accederá mediante una petición POST a la url [https://decideiopostproc.herokuapp.com/postproc/](https://decideiopostproc.herokuapp.com/postproc/)
 En el cuerpo de la petición POST, se enviará un JSON indicando el tipo de postprocesado que se quiere hacer y una lista con las opciones de la votación junto a sus números de votos, un atributo llamado "number" que es la posición en la que se encuentran dentro de la lista cuando se envían y algunos parámetros específicos según el tipo de procesado que se quiera. A continuación, se indica cómo debe construirse el JSON para cada tipo de procesado.
-
-**A fecha de 05/01/2019 existen 3 tipos de procesado implementados. Esta sección se actualizará conforme se implementen más tipos**
 
 ## Procesado simple
 

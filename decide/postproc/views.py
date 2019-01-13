@@ -47,6 +47,8 @@ class PostProcView(APIView):
             return self.hondt(opts)
         elif t=='AGE':
             return self.ageLimit(opts)
+        elif t=='WEIGHTEDRANDOM':
+            return self.weightedRandomSelection(opts)
         return Response({})
     #Each option has an assigned weight. The votes each option has received will be multiplied by their corresponding weight
     def weightedOptions(self, options):
@@ -66,13 +68,11 @@ class PostProcView(APIView):
         out = []
         totalVotes=0
         for opt in options:
-            totalVotes+=opt['votes']
-
-        for opt in options:
             out.append({
                 **opt,
                 'postproc': opt['votes'],
             })
+            totalVotes += opt['votes']
         out.sort(key=lambda x: -x['postproc'])
         random.seed()
         randomNumber=random.randint(1,100)
@@ -176,3 +176,31 @@ class PostProcView(APIView):
                             })
         out.sort(key=lambda x: -x['age'], reverse=True)
         return Response(out)
+    #Only one option is chosen and returned. Options are chosen randomly, taking into account the percentage of votes
+    # ach option got multiplied by its weight.
+    def weightedRandomSelection(self, options):
+        out = []
+        totalPoints=0
+        for opt in options:
+            out.append({
+                **opt,
+                'postproc': opt['votes']*opt['weight'],
+            })
+            totalPoints += opt['votes'] * opt['weight']
+        out.sort(key=lambda x: -x['postproc'])
+        random.seed()
+        randomNumber=random.randint(1,100)
+        percentageAccumulated=0.0
+        for o in out:
+            if randomNumber-((o['votes']*o['weight']/totalPoints)*100+percentageAccumulated)<=0:
+                chosen=o
+                percentageAccumulated += (o['votes']*o['weight'] / totalPoints) * 100
+                break
+            percentageAccumulated+=(o['votes']*o['weight']/totalPoints)*100
+        res=[]
+        res.append({
+                **chosen,
+                'randomNumber': randomNumber,
+                'percentageAccumulated':percentageAccumulated
+            })
+        return Response(res)
