@@ -100,6 +100,5 @@ class PostProcView(APIView):
                 actual_vote_option = results[option]
                 results[option] = actual_vote_option + (vote_len)
                 vote_len -= 1
-        return results
 
         return Response(results)
