@@ -153,11 +153,9 @@ APIS={}
 
 try:
     from local_settings import *
-    from local_settings import *
-except ImportError:
 except ImportError:
     print("local_settings.py not found")
-    print("local_settings.py not found")
+
 
 
 import django_heroku
