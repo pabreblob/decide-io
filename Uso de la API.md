@@ -74,3 +74,43 @@ Ejemplo:
 ```js
 {'a': 11, 'b': 17, 'c': 14, 'd': 18, 'e': 15}
 ```
+
+## Procesado con paridad en los resultados
+
+Las opciones recibidas serán seleccionadas según la paridad de género. En el campo "type" se enviará "GENDER" y a los atributos por defecto se le añadirá "gender" el cual representará el género del presentado a la votación. Se devolverá solo aquellas en donde se cumpla la condición tal que las opciones de votación con género masculino sumen las misma cantidad en las que el género sea femenino. En la situación de tener que descartar opciones de un género, se descartarán aquellas con menos votos. El JSON a recibir seguiría el siguiente formato:
+
+```js
+{
+            "type": "GENDER",
+            "options": [
+                { "option": "Option 1", "number": 1, "votes": 5, "gender":"m"},
+                { "option": "Option 2", "number": 2, "votes": 0, "gender":"w"},
+                { "option": "Option 3", "number": 3, "votes": 3, "gender":"w"},
+                { "option": "Option 4", "number": 4, "votes": 2, "gender":"m"},
+                { "option": "Option 5", "number": 5, "votes": 5, "gender":"w"},
+                { "option": "Option 6", "number": 6, "votes": 1, "gender":"w"},
+            ]
+        }
+```
+
+La respuesta seguirá el mismo formato que las anteriores, siendo en este caso el atributo postprocesado el mismo que votos. Estos es debido a que en un futuro se pueda manipular el metodo para limitar los votos a devolver en funcion de las opciones eliminadas. Las opciones serán ordenadas por el número de votos.
+
+## Procesado con limitación de edad
+
+Las opciones a devolver deberán pasar un filtro respecto a la edad de los presentados en las votaciones. En el campo "type" se enviará "AGE" y a los atributos por defecto se le añadirá "age", el cual representará la edad del presentado a la votación. Este filtro está preestablecido con una edad mínima de 30 años y una máxima de 40. Con estas limitaciones se plantea una mejora para el método en el que se pueda establecer mediante parametros estos límites de edad. El formato JSON que debe cumplir será del siguiente formato
+
+```js
+{
+            "type": "AGE",
+            "options": [
+                {"option": "Option 1", "number": 1, "votes": 5, "age": 29},
+                {"option": "Option 2", "number": 2, "votes": 0, "age": 34},
+                {"option": "Option 3", "number": 3, "votes": 3, "age": 31},
+                {"option": "Option 4", "number": 4, "votes": 2, "age": 25},
+                {"option": "Option 5", "number": 5, "votes": 5, "age": 37},
+                {"option": "Option 6", "number": 6, "votes": 1, "age": 42},
+            ]
+        }
+```
+
+La respuesta ofrecida, al igual que las anteriores, solo añadira un atributo postprocesado. En este caso, el atributo indicará la minima edad que se ha establecido en el posprocesado, para así poder diferenciar el requisito de edad establecido. Las opciones serán ordenadas por la edad, siendo la primera la de menor edad.
