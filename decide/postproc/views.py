@@ -89,7 +89,6 @@ class PostProcView(APIView):
     def borda_count(self,options):
         choices = options['choices']
         votes = options['votes']
-
         results = {}
         for i in choices:
             results[i] = 0
