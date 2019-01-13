@@ -39,6 +39,8 @@ class PostProcView(APIView):
             return self.weightedOptions(opts)
         elif t=='RANDOM':
             return self.randomSelection(opts)
+        elif t=='GENDER':
+            return self.genderParity(opts)
         elif t=='BORDA':
             return self.borda_count(opts)
         return Response({})
@@ -84,6 +86,36 @@ class PostProcView(APIView):
                 'percentageAccumulated':percentageAccumulated
             })
         return Response(res)
+
+
+    # All options must be ordered and returned. Options are ordered according to gender parity
+    def genderParity(self, options):
+        out = []
+        menList = []
+        womenList = []
+
+        for opt in options:
+            if opt['gender'] == 'm':
+                menList.append({
+                    **opt,
+                    'postproc': opt['votes']
+                })
+            elif opt['gender'] == 'w':
+                womenList.append({
+                    **opt,
+                    'postproc': opt['votes']
+                })
+        menList.sort(key=lambda x: -x['postproc'])
+        womenList.sort(key=lambda x: -x['postproc'])
+        # limitar menList y womenList
+        if len(menList) <= len(womenList):
+            out = menList + womenList[:len(menList)]
+        else:
+            out = menList[:len(womenList)] + womenList
+
+        out.sort(key=lambda x: -x['votes'])
+
+        return Response(out)
 
     # Este metodo recibe los votos y devuelve los votos procesados según el algoritmo de recuento borda
     def borda_count(self,options):
