@@ -39,6 +39,10 @@ class PostProcView(APIView):
             return self.weightedOptions(opts)
         elif t=='RANDOM':
             return self.randomSelection(opts)
+        elif t=='GENDER':
+            return self.genderParity(opts)
+        elif t=='BORDA':
+            return self.borda_count(opts)
         return Response({})
     #Each option has an assigned weight. The votes each option has received will be multiplied by their corresponding weight
     def weightedOptions(self, options):
@@ -86,3 +90,50 @@ class PostProcView(APIView):
         #Here we are going to implement d'Hont Method (CarlosC)
         # quot = TotalNumberOfVotes / (SeatsOfParty + 1)
         #initially SeatsOfParty = 0 for all parties
+
+
+    # All options must be ordered and returned. Options are ordered according to gender parity
+    def genderParity(self, options):
+        out = []
+        menList = []
+        womenList = []
+
+        for opt in options:
+            if opt['gender'] == 'm':
+                menList.append({
+                    **opt,
+                    'postproc': opt['votes']
+                })
+            elif opt['gender'] == 'w':
+                womenList.append({
+                    **opt,
+                    'postproc': opt['votes']
+                })
+        menList.sort(key=lambda x: -x['postproc'])
+        womenList.sort(key=lambda x: -x['postproc'])
+        # limitar menList y womenList
+        if len(menList) <= len(womenList):
+            out = menList + womenList[:len(menList)]
+        else:
+            out = menList[:len(womenList)] + womenList
+
+        out.sort(key=lambda x: -x['votes'])
+
+        return Response(out)
+
+    # Este metodo recibe los votos y devuelve los votos procesados según el algoritmo de recuento borda
+    def borda_count(self,options):
+        choices = options['choices']
+        votes = options['votes']
+        results = {}
+        for i in choices:
+            results[i] = 0
+
+        for vote in votes:
+            vote_len = len(vote)
+            for option in vote:
+                actual_vote_option = results[option]
+                results[option] = actual_vote_option + (vote_len)
+                vote_len -= 1
+
+        return Response(results)
