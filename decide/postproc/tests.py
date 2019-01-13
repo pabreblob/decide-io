@@ -171,7 +171,6 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-
     def test_borda1(self):
         data = {
             'type': 'BORDA',
@@ -233,6 +232,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertNotEqual(values, expected)
 
+
     def test_hondt(self):
         data = {
             'type': 'HONDT',
@@ -250,13 +250,36 @@ class PostProcTestCase(APITestCase):
 
         expected = {1, 0, 1, 0, 1, 0}
 
-        response = self.client.post('/postproc/', data, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        values = response.json()
-
         compare = []
         for i in values:
             compare.append(i['seat'])
 
         self.assertNotEqual(compare, expected)
+
+
+    def test_ageLimit(self):
+        data = {
+            'type': 'AGE',
+            'options': [
+                {'option': 'Option 1', 'number': 1, 'votes': 5, 'age': 29},
+                {'option': 'Option 2', 'number': 2, 'votes': 0, 'age': 34},
+                {'option': 'Option 3', 'number': 3, 'votes': 3, 'age': 31},
+                {'option': 'Option 4', 'number': 4, 'votes': 2, 'age': 25},
+                {'option': 'Option 5', 'number': 5, 'votes': 5, 'age': 37},
+                {'option': 'Option 6', 'number': 6, 'votes': 1, 'age': 42},
+            ]
+        }
+
+        expected_result = [
+            {'option': 'Option 3', 'number': 3, 'votes': 3, 'age': 31, 'postproc':30},
+            {'option': 'Option 2', 'number': 2, 'votes': 0, 'age': 34, 'postproc':30},
+            {'option': 'Option 5', 'number': 5, 'votes': 5, 'age': 37, 'postproc':30},
+
+        ]
+
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)

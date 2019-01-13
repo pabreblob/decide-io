@@ -45,6 +45,8 @@ class PostProcView(APIView):
             return self.borda_count(opts)
         elif t=='HONDT':
             return self.hondt(opts)
+        elif t=='AGE':
+            return self.ageLimit(opts)
         return Response({})
     #Each option has an assigned weight. The votes each option has received will be multiplied by their corresponding weight
     def weightedOptions(self, options):
@@ -161,3 +163,16 @@ class PostProcView(APIView):
                 vote_len -= 1
 
         return Response(results)
+
+    # Limit results from options for age where minimum age is equals to 30 and maximum age is equals to 40
+    def ageLimit(self, options):
+        out = []
+        minAge = 30
+        maxAge = 40
+        for opt in options:
+            if minAge <= opt['age'] <= maxAge:
+                out.append({**opt,
+                            'postproc': minAge
+                            })
+        out.sort(key=lambda x: -x['age'], reverse=True)
+        return Response(out)

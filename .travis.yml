@@ -17,8 +17,6 @@ before_script:
 - python manage.py migrate
 script: 
 - python manage.py test
-after_script:
-- cd ..
 addons:
   postgresql: "9.6"
 deploy:
