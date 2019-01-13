@@ -1,2 +1,2 @@
-release: sh -c 'cd decide && python manage.py migrate'
-web: sh -c 'cd decide && gunicorn decide.wsgi --log-file -'
+release: sh -c 'python manage.py migrate'
+web: sh -c 'gunicorn decide.wsgi --log-file -'
