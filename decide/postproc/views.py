@@ -60,7 +60,7 @@ class PostProcView(APIView):
                 'postproc': opt['votes']*opt['weight'],
             })
 
-        out.sort(key=lambda x: -x['postproc'])
+        out.sort(key=lambda x: x['postproc'])
         return Response(out)
 
     #Only one option is chosen and returned. Options are chosen randomly, taking into account the percentage of votes each option got.
