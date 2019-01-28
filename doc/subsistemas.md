@@ -85,6 +85,8 @@ la opción con más opciones.
 Este subsistema también es el encargado de aplicar diferentes reglas a los
 resultados, por ejemplo, aplicar reglas de paridad, ley d'Hondt, etc.
 
+[documentación](post-procesado.md)
+
 Visualización de resultados
 ---------------------------
 
