@@ -167,7 +167,7 @@ class PostProcView(APIView):
 
         out.sort(key=lambda x: -x['postproc'])
 
-        return Response(results)
+        return Response(out)
 
     # Limit results from options for age where minimum age is equals to 30 and maximum age is equals to 40
     def ageLimit(self, options):
