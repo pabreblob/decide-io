@@ -4,19 +4,6 @@ import random
 
 class PostProcView(APIView):
 
-    def identity(self, options):
-        out = []
-
-        for opt in options:
-            out.append({
-                **opt,
-                'postproc': opt['votes'],
-            });
-
-        out.sort(key=lambda x: -x['postproc'])
-        return Response(out)
-
-
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT
@@ -32,6 +19,7 @@ class PostProcView(APIView):
 
         t = request.data.get('type', 'IDENTITY')
         opts = request.data.get('options', [])
+        params = request.data.get('parameters', [])
 
         if t == 'IDENTITY':
             return self.identity(opts)
@@ -50,6 +38,19 @@ class PostProcView(APIView):
         elif t=='WEIGHTEDRANDOM':
             return self.weightedRandomSelection(opts)
         return Response({})
+
+    def identity(self, options):
+        out = []
+
+        for opt in options:
+            out.append({
+                **opt,
+                'postproc': opt['votes'],
+            });
+
+        out.sort(key=lambda x: -x['postproc'])
+        return Response(out)
+
     #Each option has an assigned weight. The votes each option has received will be multiplied by their corresponding weight
     def weightedOptions(self, options):
         out = []
@@ -67,16 +68,19 @@ class PostProcView(APIView):
     def randomSelection(self, options):
         out = []
         totalVotes=0
+
         for opt in options:
             out.append({
                 **opt,
                 'postproc': opt['votes'],
             })
             totalVotes += opt['votes']
+
         out.sort(key=lambda x: -x['postproc'])
         random.seed()
         randomNumber=random.randint(1,100)
         percentageAccumulated=0.0
+
         for o in out:
             if randomNumber-((o['votes']/totalVotes)*100+percentageAccumulated)<=0:
                 chosen=o
@@ -147,20 +151,21 @@ class PostProcView(APIView):
 
         return Response(out)
 
-    # Este metodo recibe los votos y devuelve los votos procesados según el algoritmo de recuento borda
+    # This method receives the number of votes (as points) each choice had.
+    # Given n the number of choices, each voter rank the n choices
+    # by his/her preference.
+    # Given the rank each choice has to a voter, different points are assigned
+    # being 1 the minimum and n the maximum.
     def borda_count(self,options):
-        choices = options['choices']
-        votes = options['votes']
-        results = {}
-        for i in choices:
-            results[i] = 0
+        out = []
 
-        for vote in votes:
-            vote_len = len(vote)
-            for option in vote:
-                actual_vote_option = results[option]
-                results[option] = actual_vote_option + (vote_len)
-                vote_len -= 1
+        for opt in options:
+            out.append({
+                **opt,
+                'postproc': round(opt['votes']/len(options), 5 ),
+            })
+
+        out.sort(key=lambda x: -x['postproc'])
 
         return Response(results)
 
