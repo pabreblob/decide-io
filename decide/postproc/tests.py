@@ -254,33 +254,29 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(values, expected_result)
 
 
-    def test_hondt(self):
+    def test_hondt1(self):
         data = {
             'type': 'HONDT',
-            'options': {
-                'escanos': 3,
-                'votes': [{'option': 'Option 1', 'seat': 1, 'votes': 15},
-                          {'option': 'Option 2', 'seat': 0, 'votes': 3},
-                          {'option': 'Option 3', 'seat': 1, 'votes': 9},
-                          {'option': 'Option 4', 'seat': 0, 'votes': 7},
-                          {'option': 'Option 5', 'seat': 1, 'votes': 12},
-                          {'option': 'Option 6', 'seat': 0, 'votes': 1}
-                          ]
-            }
+            'parameters' :{'allocations': 5},
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 185},
+                { 'option': 'Option 2', 'number': 2, 'votes': 175},
+                { 'option': 'Option 3', 'number': 3, 'votes': 165},
+                { 'option': 'Option 4', 'number': 4, 'votes': 155},
+            ]
         }
 
-        expected = {1, 0, 1, 0, 1, 0}
+        expected_res = [
+            {'option': 'Option 1', 'number': 1, 'votes': 185, 'postproc': 2},
+            {'option': 'Option 2', 'number': 2, 'votes': 175, 'postproc': 1},
+            {'option': 'Option 3', 'number': 3, 'votes': 165, 'postproc': 1},
+            {'option': 'Option 4', 'number': 4, 'votes': 155, 'postproc': 1}]
 
         response = self.client.post('/postproc/', data, format='json')
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
-
-        compare = []
-        for i in values:
-            compare.append(i['seat'])
-
-        self.assertNotEqual(compare, expected)
+        self.assertEqual(values, expected_result)
 
 
     def test_ageLimit(self):

@@ -32,7 +32,7 @@ class PostProcView(APIView):
         elif t=='BORDA':
             return self.borda_count(opts)
         elif t=='HONDT':
-            return self.hondt(opts)
+            return self.hondt(opts, params)
         elif t=='AGE':
             return self.ageLimit(opts)
         elif t=='WEIGHTEDRANDOM':
@@ -93,32 +93,39 @@ class PostProcView(APIView):
                 'randomNumber': randomNumber,
                 'percentageAccumulated':percentageAccumulated
             })
-        return Response(res)
+            return Response(res)
 
         #Here we are going to implement d'Hont Method (CarlosC)
         # quot = TotalNumberOfVotes / (SeatsOfParty + 1)
         #initially SeatsOfParty = 0 for all parties
-    def hondt(self, options):
-            escanos = options['escanos']
-            votos = options['votes']
+    def hondt(self, options, parameters):
+        out = []
+        allocations = parameters['allocations']
+        #All options are appended initially 'postproc': 0
+        for opt in options:
+            out.append({
+                **opt,
+                'postproc': 0,
+            })
+        for i in range(0,allocations):
+            maxQuotationOption = None
 
-            aux2 = escanos
+            for opt in out:
+                #We calculate de quotient for the current option
+                quotient = opt['votes']/(opt['postproc']+1)
+                #We calculate de quotient for the maxQuotationOption
+                if maxQuotationOption is not None:
+                    quotientOfmaxQuotationOption = maxQuotationOption['votes']/(maxQuotationOption['postproc']+1)
+                else:
+                    quotientOfmaxQuotationOption = -1
 
-            for i in votos:
-                i['seat'] = 0
-
-            for i in range(0, escanos):
-                maximum = [None, 0]
-            for x in votos:
-                voto_actual = x['votes']
-                formula_aplicada = voto_actual / (x['seat'] + 1)
-                if formula_aplicada > maximum[1]:
-                    maximum = [x['option'], formula_aplicada]
-            for g in votos:
-                if g['option'] == maximum[0]:
-                    g['seat'] += 1
-            aux2 -= 1
-            return Response(votos)
+                if quotientOfmaxQuotationOption < quotient:
+                    maxQuotationOption = opt
+            #Once determined which option has the higher quotation, we assign it an allocation
+            out[maxQuotationOption['number'] - 1]['postproc'] += 1
+        #It is important that the list is sorted at the end
+        out.sort(key=lambda x: -x['postproc'])
+        return Response(out)
 
 
 
